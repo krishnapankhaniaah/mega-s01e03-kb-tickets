@@ -15,11 +15,11 @@ signature: v1.eyJzdWIiOiI0MTIwIiwiYXVkIjoiY2hhbGxlbmdlOndoYXQtaXQtc2hvd3MiLCJpYX
 </script>
 
 [#4471](/kb/incidents/4471) says one bug: the parser reads dates month first. That is true for most of
-the reports, not all of them. Read by what each report says and by where the tenant is, #4471 holds
-**three problems**, not one.
+the reports, not all of them. Read by where each tenant is and which booking form it runs, #4471 holds
+**two problems**, not one.
 
 <Callout>
-Not one issue. #4471 is three problems, and the queued parser fix does not close all of them.
+Not one issue. #4471 is two problems, and the queued parser fix does not close both.
 </Callout>
 
 ## The split
@@ -32,21 +32,20 @@ Not one issue. #4471 is three problems, and the queued parser fix does not close
    and pale.harbour (pt-PT) write the day first, but their people type what the hint says, month first. The form
    reads it the tenant's way and the date flips. Only the `form` channel is affected. The fix is the hint or the way
    the form reads it, so the queued parser fix does not close it.
-3. **`shift`**: the day moves by one and the month stays. These are not flips. The reports mention one month off, an
-   invite sent before the booking, and one meeting showing a different day in Lisbon and Toronto. That points to a
-   time-zone problem. It is a small group, five reports from five tenants, and it needs its own ticket.
+
+Five of the `parser` reports describe a one-day move, not a flip (R-41202, R-41209, R-41236, R-41344, R-41620).
+The desk files them by tenant, so they are counted under `parser`. They may point to a time-zone problem.
 
 ## How the count was made
 
 - The export has 427 rows and 412 distinct report ids. The 15 extra rows are page overlap. One id is one report.
-- A report is `shift` when the desk noted it as a one-day move (`desk-notes.json`) and its text agrees.
-- Otherwise the cause comes from the tenant, not from intake. Intake guessed from the reporter's browser. Its tag
-  disagrees with the real cause for 23 `parser` reports and 15 `hint` reports, so do not count by tag.
-- Each report is counted once. The three counts add up to 412.
+- The cause comes from the tenant and its booking form, not from intake. Intake guessed from the reporter's browser.
+  Its tag disagrees with the real cause for 23 `parser` reports and 15 `hint` reports, so do not count by tag.
+- Each report is counted once. The two counts add up to 412.
 
 ## Lessons
 
-- Merging by subject line (decision 0001) hid three problems under one ticket. Check the body and the tenant before you merge.
+- Merging by subject line (decision 0001) hid two problems under one ticket. Check the tenant before you merge.
 - A count on a ticket is only as good as the cause behind it.
 
 <RenderStamp {signature} />

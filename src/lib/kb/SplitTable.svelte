@@ -1,25 +1,26 @@
 <script lang="ts">
   import reports from '#lib/data/reports-4471.json';
   import notes from '#lib/data/desk-notes.json';
-  import type { Report } from '#lib/kb/causes';
+  import { groupByCause, readAs, uniqueById, type Report } from '#lib/kb/causes';
   import { tenantOf } from '#lib/kb/locales';
-  import { splitTicket } from '#lib/kb/split';
 
   let { ticket }: { ticket: number } = $props();
 
-  const split = $derived(splitTicket(reports as Report[], ticket, tenantOf, notes.oneDayMove));
+  const merged = $derived(uniqueById(reports as Report[]).filter((r) => r.mergedInto === ticket));
+  const groups = $derived(groupByCause(merged, tenantOf));
   const fmt = (o: Record<string, number>) =>
     Object.entries(o)
       .sort((a, b) => b[1] - a[1])
       .map(([k, n]) => `${k} ×${n}`)
       .join(' · ');
+  const channels = (rs: Report[]) =>
+    fmt(rs.reduce<Record<string, number>>((n, r) => ({ ...n, [r.channel]: (n[r.channel] ?? 0) + 1 }), {}));
 </script>
 
 <p class="sum">
-  <strong>{split.total}</strong> reports merged into #{ticket} ·
-  <strong>{split.rows.length}</strong> problems ·
-  {split.rows.map((r) => r.count).join(' + ')} = {split.rows.reduce((n, r) => n + r.count, 0)}
-  {#if split.unplaced}· <strong>{split.unplaced}</strong> unplaced{/if}
+  <strong>{merged.length}</strong> reports merged into #{ticket} ·
+  <strong>{groups.length}</strong> problems ·
+  {groups.map((g) => g.reports.length).join(' + ')} = {groups.reduce((n, g) => n + g.reports.length, 0)}
 </p>
 
 <table>
@@ -27,20 +28,27 @@
     <tr><th>problem</th><th>reports</th><th>channels</th><th>intake tagged</th><th>tenants</th><th>seen</th></tr>
   </thead>
   <tbody>
-    {#each split.rows as r (r.problem)}
+    {#each groups as g (g.cause)}
       <tr>
-        <td><code>{r.problem}</code></td>
-        <td>{r.count}</td>
-        <td>{fmt(r.channels)}</td>
-        <td class="tags">{fmt(r.intakeTags)}</td>
-        <td>{r.tenants}</td>
-        <td>{r.firstSeen} → {r.lastSeen}</td>
+        <td><code>{g.cause}</code></td>
+        <td>{g.reports.length}</td>
+        <td>{channels(g.reports)}</td>
+        <td class="tags">{fmt(g.taggedAs)}</td>
+        <td>{g.tenants}</td>
+        <td>{g.firstSeen} → {g.lastSeen}</td>
       </tr>
     {/each}
   </tbody>
 </table>
 
+{#each groups as g (g.cause)}
+  {@const moved = readAs(g, notes.oneDayMove)}
+  {#if moved}
+    <p class="note">{moved} of the {g.cause} reports read as a one-day move; counted here, where they are filed.</p>
+  {/if}
+{/each}
+
 <style>
   .sum { font-size: 1.1rem; }
-  .tags { color: var(--muted); font-size: 0.85em; }
+  .tags, .note { color: var(--muted); font-size: 0.85em; }
 </style>
