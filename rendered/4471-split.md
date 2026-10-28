@@ -1,10 +1,10 @@
 # #4471 · what the 412 reports hold
 
-support desk · kb · owner **krishnapankhaniaah** · status **living** · reviewed 2026-10-29
+support desk · kb · owner **krishnapankhaniaah** · status **living** · reviewed 2026-10-28
 
 #4471 says one bug: the parser reads dates month first. That is true for most of the reports, not all of them. Read by where each tenant is and which booking form it runs, #4471 holds **two problems**, not one.
 
-> Not one issue. #4471 is two problems. Engineering closed it on 5 October: `parser` fixed, `hint` won't fix.
+> Not one issue. #4471 is two problems. Engineering closed it on 5 October: parser fixed, hint won't fix.
 
 ## The split
 
