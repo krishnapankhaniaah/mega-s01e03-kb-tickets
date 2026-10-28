@@ -4,7 +4,7 @@ support desk · kb · owner **krishnapankhaniaah** · status **living** · revie
 
 #4471 says one bug: the parser reads dates month first. That is true for most of the reports, not all of them. Read by where each tenant is and which booking form it runs, #4471 holds **two problems**, not one.
 
-> Not one issue. #4471 is two problems, and the queued parser fix does not close both.
+> Not one issue. #4471 is two problems. Engineering closed it on 5 October: `parser` fixed, `hint` won't fix.
 
 ## The split
 
@@ -17,8 +17,8 @@ support desk · kb · owner **krishnapankhaniaah** · status **living** · revie
 
 5 of the parser reports read as a one-day move; counted here, where they are filed.
 
-1. **`parser`**: the shared parser reads every date month first. Tenants whose locale writes the day first get day and month flipped. This is the bug #4471 describes.
-2. **`hint`**: the `booking-v3` form prints `MM/DD/YYYY` under its date field. alder.physio (de-DE), copper.studio (es-ES) and pale.harbour (pt-PT) write the day first, but their people type what the hint says, month first. The form reads it the tenant's way and the date flips. Only the `form` channel is affected. The fix is the hint or the way the form reads it, so the queued parser fix does not close it.
+1. **`parser`**: the shared parser reads every date month first. Tenants whose locale writes the day first get day and month flipped. This is the bug #4471 describes. **Fixed**: `fix(dates): parse dd/mm for eu locales`.
+2. **`hint`**: the `booking-v3` form prints `MM/DD/YYYY` under its date field. alder.physio (de-DE), copper.studio (es-ES) and pale.harbour (pt-PT) write the day first, but their people type what the hint says, month first. The form reads it the tenant's way and the date flips. Only the `form` channel is affected. The parser fix does not close it. **Won't fix**: the `booking-v3` form is retired.
 
 Five of the `parser` reports describe a one-day move, not a flip (R-41202, R-41209, R-41236, R-41344, R-41620). The desk files them by tenant, so they are counted under `parser`. They may point to a time-zone problem.
 
